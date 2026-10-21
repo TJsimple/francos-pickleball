@@ -7,10 +7,8 @@
   node_bundler = "esbuild"
   included_files = ["public/js/engines.js"]
 
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/api/:splat"
-  status = 200
+# API routing is declared in the function itself (Functions v2 config.path
+# = "/api/*" in netlify/functions/api.js), so no /api/* redirect is needed.
 
 # SPA fallback: hash routing means this is just insurance for deep links.
 [[redirects]]

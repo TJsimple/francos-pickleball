@@ -4,18 +4,24 @@ process.env.PB_STORE = 'memory'; // must be set before the API module loads
 const { test } = require('node:test');
 const assert = require('node:assert');
 const PB = require('../public/js/engines.js');
-const { handler } = require('../netlify/functions/api.js');
+// The API is a Functions v2 (ESM) module now: load its default export.
+const handlerPromise = import('../netlify/functions/api.js').then(m => m.default);
 
 async function call(method, path, body) {
-  const res = await handler({
-    httpMethod: method,
-    path,
-    headers: {},
-    body: body ? JSON.stringify(body) : null
-  });
+  const handler = await handlerPromise;
+  const init = { method, headers: {} };
+  if (body !== undefined && body !== null) {
+    init.headers['Content-Type'] = 'application/json';
+    init.body = JSON.stringify(body);
+  }
+  const res = await handler(new Request('http://localhost' + path, init), {});
+  const raw = await res.text();
   let parsed = null;
-  try { parsed = JSON.parse(res.body); } catch (e) { /* csv */ }
-  return { status: res.statusCode, body: parsed, raw: res.body, headers: res.headers };
+  try { parsed = JSON.parse(raw); } catch (e) { /* csv */ }
+  const headers = {};
+  res.headers.forEach((v, k) => { headers[k] = v; });
+  if (res.headers.get('content-type')) headers['Content-Type'] = res.headers.get('content-type');
+  return { status: res.status, body: parsed, raw, headers };
 }
 
 test('API smoke: full event lifecycle, stats aggregation, CSV, duplicate, sub', async () => {

@@ -2,7 +2,10 @@
  * Storage adapter for the Franco's Pickleball API.
  * Production: Netlify Blobs. Local/tests: in-memory or JSON-file adapter.
  * Select with PB_STORE = 'blobs' | 'file' | 'memory'.
- * Default: 'blobs' when @netlify/blobs is loadable, else 'file'.
+ * Default: 'blobs' on the Netlify runtime, else 'file'.
+ * The Blobs store is resolved lazily inside the request handler so that
+ * @netlify/blobs picks up the context Netlify injects for Functions v2
+ * handlers (the API function uses the v2 default-export format for this).
  */
 'use strict';
 
