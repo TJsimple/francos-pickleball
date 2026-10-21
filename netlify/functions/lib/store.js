@@ -3,22 +3,24 @@
  * Production: Netlify Blobs. Local/tests: in-memory or JSON-file adapter.
  * Select with PB_STORE = 'blobs' | 'file' | 'memory'.
  * Default: 'blobs' on the Netlify runtime, else 'file'.
- * The Blobs store is resolved lazily inside the request handler so that
- * @netlify/blobs picks up the context Netlify injects for Functions v2
- * handlers (the API function uses the v2 default-export format for this).
+ * The Blobs store is resolved fresh on EVERY operation, never cached:
+ * @netlify/blobs captures the context token at getStore() time and its
+ * Client then sends that token as a Bearer credential on every request.
+ * The context Netlify injects for Functions v2 handlers is refreshed per
+ * invocation and its token is short-lived, so a store cached in a warm
+ * function instance keeps sending an expired token and every call fails
+ * with "Netlify Blobs has generated an internal error (Failed to decode
+ * token: Token expired)". Resolving per operation always picks up the
+ * current invocation's fresh context.
  */
 'use strict';
 
 const mem = new Map();
 let mode = process.env.PB_STORE || null;
-let blobsStore = null;
 
 async function getBlobs() {
-  if (!blobsStore) {
-    const { getStore } = require('@netlify/blobs');
-    blobsStore = getStore('francos-pickleball');
-  }
-  return blobsStore;
+  const { getStore } = require('@netlify/blobs');
+  return getStore('francos-pickleball');
 }
 
 function filePath(key) {
