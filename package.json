@@ -1,0 +1,1 @@
+{"dependencies":{"@netlify/blobs":"^8.1.0"},"description":"Franco's Pickleball — no-login, link-based pickleball session organizer (Netlify static frontend + Functions + Blobs).","engines":{"node":">=18"},"name":"francos-pickleball-app","private":true,"scripts":{"test":"node --test test/*.test.js"},"version":"1.0.0"}

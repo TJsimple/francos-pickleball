@@ -1,0 +1,19 @@
+[build]
+  publish = "public"
+  functions = "netlify/functions"
+  command = "echo 'Static site — no build step'"
+
+[functions]
+  node_bundler = "esbuild"
+  included_files = ["public/js/engines.js"]
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+
+# SPA fallback: hash routing means this is just insurance for deep links.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Franco's Pickleball</title>
+<meta name="description" content="Franco's Health Club & Spa — pickleball session organizer. Create a game, share the link, play.">
+<style>
+  :root{
+    --bg:#0b100e; --panel:#141d18; --panel2:#1a251f; --line:#26332b;
+    --text:#eef4f0; --muted:#9db3a6; --accent:#7ac74f; --accent2:#f2b134;
+    --danger:#e5534b; --radius:14px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  #app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;position:relative}
+  header{padding:14px 16px 8px;text-align:center}
+  header img.logo{max-width:250px;width:72%;height:auto;display:block;margin:2px auto 0}
+  .brand-sub{letter-spacing:.35em;font-size:12px;color:var(--accent2);font-weight:700;margin-top:2px}
+  .updated{font-size:12px;color:var(--muted);text-align:center;padding:2px 0 8px}
+  .updated button{background:none;border:none;color:var(--accent);font-size:14px;cursor:pointer;padding:2px 6px}
+  main{flex:1;padding:6px 16px 96px;width:100%}
+  h1{font-size:22px;margin:10px 0 6px}
+  h2{font-size:17px;margin:18px 0 8px}
+  h3{font-size:15px;margin:14px 0 6px}
+  p{line-height:1.45}
+  .muted{color:var(--muted)} .small{font-size:13px} .center{text-align:center}
+  .btn{display:block;width:100%;padding:15px;border-radius:var(--radius);border:1px solid var(--line);
+    background:var(--panel2);color:var(--text);font-size:16px;font-weight:600;cursor:pointer;margin:10px 0;text-align:center;text-decoration:none}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#0c1409}
+  .btn.gold{background:var(--accent2);border-color:var(--accent2);color:#171106}
+  .btn.danger{background:transparent;border-color:var(--danger);color:var(--danger)}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn.inline{display:inline-block;width:auto;padding:9px 14px;font-size:14px;margin:4px 4px 4px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin:10px 0}
+  .match{border-left:4px solid var(--accent)}
+  .match .court{font-size:12px;font-weight:700;letter-spacing:.12em;color:var(--accent2)}
+  .match .teams{font-size:16px;font-weight:600;line-height:1.5;margin:4px 0}
+  .match .vs{color:var(--muted);font-weight:400;font-size:13px}
+  .match .score{font-size:20px;font-weight:800}
+  .tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.06em;padding:3px 8px;border-radius:99px;background:var(--panel2);border:1px solid var(--line);color:var(--muted);vertical-align:middle}
+  .tag.live{color:#0c1409;background:var(--accent);border-color:var(--accent)}
+  .tag.final{color:#171106;background:var(--accent2);border-color:var(--accent2)}
+  input[type=text],input[type=number],input[type=date],input[type=time],select,textarea{
+    width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--panel);
+    color:var(--text);font-size:16px;margin:5px 0 10px}
+  label{font-size:13px;font-weight:600;color:var(--muted);display:block;margin-top:10px}
+  .radio-list .opt{display:flex;gap:10px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:var(--radius);padding:12px;margin:8px 0;cursor:pointer}
+  .radio-list .opt.sel{border-color:var(--accent)}
+  .radio-list .opt input{margin-top:3px}
+  .radio-list .opt b{display:block;font-size:15px}
+  .radio-list .opt span{font-size:13px;color:var(--muted)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+  .chip{padding:10px 14px;border-radius:99px;border:1px solid var(--line);background:var(--panel);
+    color:var(--text);font-size:15px;font-weight:600;cursor:pointer}
+  .chip.sel{background:var(--accent);color:#0c1409;border-color:var(--accent)}
+  .player-btn{display:block;width:100%;text-align:left;padding:13px 14px;margin:7px 0;border-radius:12px;
+    border:1px solid var(--line);background:var(--panel);color:var(--text);font-size:16px;cursor:pointer}
+  .player-btn.sel{border-color:var(--accent);background:var(--panel2)}
+  .player-btn .dot{float:right}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:right}
+  th:first-child,td:first-child{text-align:left}
+  th{color:var(--muted);font-size:12px;letter-spacing:.05em}
+  .pills{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:8px 0}
+  .pill{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--panel);
+    color:var(--text);font-weight:700;cursor:pointer;font-size:15px}
+  .pill.sel{background:var(--accent);color:#0c1409;border-color:var(--accent)}
+  .pill.done{border-color:var(--accent);color:var(--accent)}
+  .pill.sel.done{color:#0c1409}
+  .roundnav{display:flex;justify-content:space-between;align-items:center;margin:6px 0}
+  .roundnav button{background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:10px;
+    padding:8px 14px;font-size:15px;cursor:pointer}
+  .banner{border-radius:var(--radius);padding:12px 14px;margin:10px 0;font-weight:600;font-size:14px}
+  .banner.green{background:#17301a;border:1px solid var(--accent)}
+  .banner.gold{background:#33270d;border:1px solid var(--accent2)}
+  .banner.grey{background:var(--panel);border:1px solid var(--line);color:var(--muted)}
+  nav.tabs{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;
+    background:#0e1512;border-top:1px solid var(--line);display:flex;z-index:20}
+  nav.tabs button{flex:1;background:none;border:none;color:var(--muted);font-size:12px;font-weight:600;
+    padding:10px 2px calc(10px + env(safe-area-inset-bottom));cursor:pointer}
+  nav.tabs button.sel{color:var(--accent)}
+  nav.tabs button .ic{display:block;font-size:19px;line-height:1.2}
+  .backlink{color:var(--accent);text-decoration:none;font-size:14px;font-weight:600}
+  .sharebox{word-break:break-all;background:var(--panel2);border:1px dashed var(--line);border-radius:10px;padding:10px;font-size:13px}
+  .score-inputs{display:flex;gap:8px;align-items:center;margin-top:8px}
+  .score-inputs input{width:74px;text-align:center;font-size:18px;font-weight:700;margin:0}
+  .err{background:#3a1512;border:1px solid var(--danger);color:#ffb4ae;border-radius:10px;padding:10px 12px;font-size:14px;margin:10px 0}
+  .toast{position:fixed;bottom:86px;left:50%;transform:translateX(-50%);background:var(--accent);color:#0c1409;
+    font-weight:700;padding:11px 18px;border-radius:99px;font-size:14px;z-index:50;box-shadow:0 4px 18px rgba(0,0,0,.5)}
+  .stepper{display:flex;align-items:center;gap:14px;margin:6px 0}
+  .stepper button{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--text);font-size:20px;cursor:pointer}
+  .stepper .val{font-size:19px;font-weight:700;min-width:30px;text-align:center}
+  .toggle{display:flex;justify-content:space-between;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;margin:8px 0;cursor:pointer}
+  .toggle .sw{width:50px;height:28px;border-radius:99px;background:var(--line);position:relative;flex:none}
+  .toggle .sw:after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:left .15s}
+  .toggle.on .sw{background:var(--accent)} .toggle.on .sw:after{left:25px}
+  details.round{margin:8px 0} details.round summary{cursor:pointer;font-weight:700;padding:10px 12px;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+  .kv{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .kv span:first-child{color:var(--muted)}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <img class="logo" src="/img/logo.webp" alt="Franco's Health Club &amp; Spa"
+         onerror="this.outerHTML='&lt;div style=&quot;font-size:30px;font-weight:800;letter-spacing:.14em&quot;&gt;FRANCO\'S&lt;/div&gt;'">
+    <div class="brand-sub">PICKLEBALL</div>
+  </header>
+  <div class="updated" id="updated"></div>
+  <main id="main"></main>
+</div>
+<script src="/js/engines.js"></script>
+<script>
+'use strict';
+/* ================= state ================= */
+const LS = {
+  get(k, d){ try { const v = localStorage.getItem('pb:' + k); return v ? JSON.parse(v) : d; } catch(e){ return d; } },
+  set(k, v){ try { localStorage.setItem('pb:' + k, JSON.stringify(v)); } catch(e){} }
+};
+const S = {
+  code: null, group: null, route: 'home', eventId: null, tab: 'courts',
+  roundIdx: 0, statsTab: 'players', statsClub: null, lastFetch: null,
+  wiz: null
+};
+const $main = document.getElementById('main');
+const esc = s => String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtTime = d => d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+function toast(msg){
+  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t); setTimeout(() => t.remove(), 2400);
+}
+function hostToken(evId){ return (LS.get('hostTokens', {}))[evId] || null; }
+function setHostToken(evId, tok){ const m = LS.get('hostTokens', {}); m[evId] = tok; LS.set('hostTokens', m); }
+function myName(evId){ return (LS.get('me', {}))[evId] || null; }
+function setMyName(evId, name){ const m = LS.get('me', {}); if (name) m[evId] = name; else delete m[evId]; LS.set('me', m); }
+function rememberGame(code, evId){ const list = LS.get('myGames', []).filter(g => !(g.code === code && g.id === evId)); list.unshift({code, id: evId}); LS.set('myGames', list.slice(0, 30)); }
+function forgetGame(code, evId){ LS.set('myGames', LS.get('myGames', []).filter(g => !(g.code === code && g.id === evId))); }
+function isHost(ev){ return !!hostToken(ev.id); }
+
+/* ================= api ================= */
+async function api(method, path, body){
+  const res = await fetch('/api' + path, {
+    method, headers: { 'Content-Type': 'application/json' },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || ('Request failed (' + res.status + ')'));
+  return data;
+}
+async function refresh(showErr){
+  if (!S.code) { render(); return; }
+  try {
+    const data = await api('GET', '/groups/' + S.code);
+    S.group = data.group; S.lastFetch = new Date();
+    renderUpdated(); render();
+  } catch(e){ if (showErr) toast(e.message); }
+}
+function renderUpdated(){
+  const el = document.getElementById('updated');
+  if (!S.code) { el.innerHTML = ''; return; }
+  el.innerHTML = 'Group ' + esc(S.code) + (S.lastFetch ? ' · Updated ' + fmtTime(S.lastFetch) : '') +
+    ' · pull down or tap <button onclick="App.refresh(true)">refresh</button>';
+}
+
+/* ================= routing ================= */
+function parseRoute(){
+  const h = location.hash.replace(/^#/, '') || '/';
+  const parts = h.split('/').filter(Boolean);
+  const q = new URLSearchParams(location.search);
+  if (q.get('g')) { S.code = q.get('g').toUpperCase(); LS.set('lastGroup', S.code); }
+  else if (!S.code) S.code = LS.get('lastGroup', null);
+  if (parts[0] === 'e' && parts[1]) { S.route = 'event'; S.eventId = parts[1]; }
+  else if (parts[0] === 'join') S.route = 'join';
+  else if (parts[0] === 'stats') S.route = 'stats';
+  else if (parts[0] === 'past') S.route = 'past';
+  else if (parts[0] === 'create') S.route = 'create';
+  else S.route = 'home';
+  renderUpdated();
+}
+function go(hash){ if (location.hash === hash) { parseRoute(); render(); } else location.hash = hash; }
+function eventLink(code, id){ return location.origin + location.pathname + '?g=' + code + '#/e/' + id; }
+
+/* ================= shared bits ================= */
+function curEvent(){ return S.group ? S.group.events.find(e => e.id === S.eventId) : null; }
+function allMatches(ev){ return (ev.rounds || []).flatMap(r => r.matches || []); }
+function standingsFor(ev){
+  const names = ev.players.map(p => p.name);
+  return PB.computeStandings(allMatches(ev), names);
+}
+function errBox(e){ return '<div class="err">' + esc(e) + '</div>'; }
+let lastError = '';
+function fail(e){ lastError = e.message || String(e); render(); }
+</script>
+<script>
+'use strict';
+/* ================= views ================= */
+function render(){
+  if (S.route === 'event') return renderEvent();
+  if (S.route === 'create') return renderWizard();
+  if (S.route === 'join') return renderJoin();
+  if (S.route === 'stats') return renderStats();
+  if (S.route === 'past') return renderPast();
+  return renderHome();
+}
+
+function renderHome(){
+  const g = S.group;
+  let h = '<h1 class="center">Pickleball at Franco\'s</h1>';
+  if (lastError) { h += errBox(lastError); lastError = ''; }
+  if (!S.code) {
+    h += '<p class="center muted">Create a game to get a shareable group link, or open a group you were sent.</p>';
+  }
+  h += '<button class="btn primary" onclick="App.startCreate()">Create a game</button>';
+  h += '<button class="btn" onclick="App.go(\'#/join\')">Join a game</button>';
+  h += '<button class="btn" onclick="App.go(\'#/stats\')">Overall stats</button>';
+  h += '<button class="btn" onclick="App.go(\'#/past\')">Past matches</button>';
+  if (!S.code) {
+    h += '<div class="card"><label>Have a group code?</label>' +
+      '<input type="text" id="codeIn" placeholder="e.g. JLRUBN" style="text-transform:uppercase">' +
+      '<button class="btn primary" onclick="App.openCode()">Open group</button></div>';
+  } else if (g) {
+    const mine = LS.get('myGames', []).filter(x => x.code === S.code)
+      .map(x => g.events.find(e => e.id === x.id)).filter(Boolean);
+    if (mine.length) {
+      h += '<h2>My games</h2>';
+      mine.forEach(ev => { h += gameRow(ev); });
+    }
+    const upcoming = g.events.filter(e => e.status !== 'finished');
+    if (upcoming.length) {
+      h += '<h2>Upcoming in this group</h2>';
+      upcoming.forEach(ev => { h += gameRow(ev); });
+    }
+    h += '<p class="small muted center">Share this group link:<br><span class="sharebox" style="display:block;margin-top:6px">' +
+      esc(location.origin + location.pathname + '?g=' + S.code) + '</span></p>';
+  }
+  $main.innerHTML = h;
+}
+function gameRow(ev){
+  const when = ev.day ? new Date(ev.day + 'T12:00:00').toLocaleDateString([], {weekday:'short', month:'short', day:'numeric'}) : '';
+  const tag = ev.status === 'live' ? '<span class="tag live">LIVE</span>' :
+              ev.status === 'finished' ? '<span class="tag final">FINAL</span>' : '<span class="tag">OPEN</span>';
+  return '<div class="card" style="cursor:pointer" onclick="App.openEvent(\'' + ev.id + '\')">' +
+    '<b>' + esc(ev.name) + '</b> ' + tag + '<br><span class="muted small">' +
+    esc([when, ev.time || '', ev.place || ev.club || ''].filter(Boolean).join(' · ')) +
+    ' — ' + ev.players.length + ' players</span></div>';
+}
+
+function renderJoin(){
+  let h = '<a class="backlink" href="#/">‹ Home</a><h1>Join a game</h1>';
+  if (!S.group) { h += '<p class="muted">Open a group link first (ask your host for the link), or create a game.</p>'; $main.innerHTML = h; return; }
+  const upcoming = S.group.events.filter(e => e.status !== 'finished');
+  h += '<h2>Upcoming games</h2>';
+  if (!upcoming.length) {
+    h += '<div class="card center"><p><b>No current games</b></p><p class="muted">Nobody has set up a game yet.</p></div>';
+  } else upcoming.forEach(ev => { h += gameRow(ev); });
+  h += '<button class="btn primary" onclick="App.startCreate()">Create a game</button>';
+  $main.innerHTML = h;
+}
+
+function clubFinishedMatches(club){
+  const out = [];
+  (S.group.events || []).filter(e => e.status === 'finished' && e.club === club)
+    .forEach(e => allMatches(e).forEach(m => out.push(m)));
+  return out;
+}
+function renderStats(){
+  let h = '<a class="backlink" href="#/">‹ Home</a><h1>Overall stats</h1>';
+  if (!S.group) { h += '<p class="muted">Open a group link first.</p>'; $main.innerHTML = h; return; }
+  const clubs = S.group.clubs;
+  if (!S.statsClub || !clubs.includes(S.statsClub)) S.statsClub = clubs[0];
+  h += '<label>Club</label><select onchange="App.statsClub(this.value)">' +
+    clubs.map(c => '<option ' + (c === S.statsClub ? 'selected' : '') + '>' + esc(c) + '</option>').join('') + '</select>';
+  h += '<div class="pills">' +
+    '<button class="chip ' + (S.statsTab === 'players' ? 'sel' : '') + '" onclick="App.statsTab(\'players\')">Players</button>' +
+    '<button class="chip ' + (S.statsTab === 'trophies' ? 'sel' : '') + '" onclick="App.statsTab(\'trophies\')">🏆 Trophies</button></div>';
+  if (S.statsTab === 'trophies') {
+    const clubEvIds = new Set(S.group.events.filter(e => e.club === S.statsClub).map(e => e.id));
+    const trophies = (S.group.trophies || []).filter(t => clubEvIds.has(t.eventId));
+    if (!trophies.length) {
+      h += '<div class="card"><p>No trophies yet. Check "Trophy match" when creating a game; 1st place wins a trophy.</p></div>';
+    } else {
+      trophies.slice().reverse().forEach(t => {
+        h += '<div class="card">🏆 <b>' + esc(t.winner) + '</b><br><span class="muted small">' +
+          esc(t.eventName) + (t.day ? ' · ' + esc(t.day) : '') + '</span></div>';
+      });
+    }
+  } else {
+    const matches = clubFinishedMatches(S.statsClub);
+    const names = new Set();
+    matches.forEach(m => m.a.concat(m.b).forEach(n => names.add(n)));
+    const table = PB.computeStandings(matches, Array.from(names));
+    if (!table.length || !matches.length) {
+      h += '<div class="card"><p class="muted">No completed matches for this club yet.</p></div>';
+    } else {
+      h += '<div class="card"><table><tr><th>#</th><th>Player</th><th>W-L</th><th>Win%</th><th>GP</th><th>+/-</th></tr>' +
+        table.map((s, i) => '<tr><td>' + (i + 1) + '</td><td>' + esc(s.name) + '</td><td>' + s.W + '-' + s.L +
+          '</td><td>' + Math.round(s.winPct * 100) + '%</td><td>' + s.GP + '</td><td>' + (s.diff > 0 ? '+' : '') + s.diff + '</td></tr>').join('') +
+        '</table><p class="small muted">Ranked by win %, then point differential, then games played. Completed matches only (in-progress matches count once their host ends them). Matched by name, not case-sensitive.</p></div>';
+    }
+  }
+  $main.innerHTML = h;
+}
+
+function renderPast(){
+  let h = '<a class="backlink" href="#/">‹ Home</a><h1>Past matches</h1>';
+  if (!S.group) { h += '<p class="muted">Open a group link first.</p>'; $main.innerHTML = h; return; }
+  const done = S.group.events.filter(e => e.status === 'finished').slice().reverse();
+  if (!done.length) h += '<div class="card"><p class="muted">No completed games yet.</p></div>';
+  done.forEach(ev => {
+    const lbl = ev.day ? new Date(ev.day + 'T12:00:00').toLocaleDateString([], {weekday:'short', month:'short', day:'numeric'}).toUpperCase() : '';
+    h += '<div class="card" style="cursor:pointer" onclick="App.openEvent(\'' + ev.id + '\')"><b>' + esc(lbl) +
+      (ev.time ? ' · ' + esc(ev.time) : '') + '</b><br>' + esc(ev.name) + '<br><span class="muted small">' +
+      esc(ev.club || '') + ' · ' + ev.players.length + ' players</span></div>';
+  });
+  $main.innerHTML = h;
+}
+</script>
+<script>
+'use strict';
+/* ================= create-game wizard ================= */
+function newWizard(){
+  const now = new Date();
+  const dayName = now.toLocaleDateString([], { weekday: 'long' });
+  return {
+    step: 1,
+    name: 'Pickleball ' + dayName,
+    day: now.toISOString().slice(0, 10),
+    time: '18:30', place: "Franco's",
+    format: 'round_robin',
+    club: S.group && S.group.clubs.length ? S.group.clubs[0] : "Franco's",
+    homeClub: S.group && S.group.clubs.length ? S.group.clubs[0] : "Franco's",
+    visitorClub: S.group && S.group.clubs.length > 1 ? S.group.clubs[1] : '',
+    selected: [], // names, in tap order
+    maxPlayers: 8, courts: ['A', 'B', 'C'], numRounds: 8,
+    balanceDupr: false, trophy: false
+  };
+}
+function wizPlayer(name){
+  const gp = S.group ? S.group.players.find(p => p.name.toLowerCase() === name.toLowerCase()) : null;
+  const w = S.wiz.tempPlayers && S.wiz.tempPlayers[name];
+  return w || gp || { name, dupr: null, club: null };
+}
+function isPairFormat(f){ return ['mixed_doubles', 'set_partners', 'club_vs_club'].includes(f); }
+
+function renderWizard(){
+  const w = S.wiz || (S.wiz = newWizard());
+  let h = '<a class="backlink" href="#/">‹ Home</a><h1>New game</h1>';
+  h += '<p class="muted small">Step ' + w.step + ' of 3</p>';
+  if (lastError) { h += errBox(lastError); lastError = ''; }
+
+  if (w.step === 1) {
+    h += '<label>Event name</label><input type="text" id="wName" value="' + esc(w.name) + '">';
+    h += '<label>Day</label><input type="date" id="wDay" value="' + esc(w.day) + '">';
+    h += '<label>Time</label><input type="time" id="wTime" value="' + esc(w.time) + '">';
+    h += '<label>Place</label><input type="text" id="wPlace" value="' + esc(w.place) + '" placeholder="e.g. the gym">';
+    h += '<label>Format</label><div class="radio-list">';
+    PB.FORMATS.forEach(f => {
+      h += '<div class="opt ' + (w.format === f.id ? 'sel' : '') + '" onclick="App.wizFormat(\'' + f.id + '\')">' +
+        '<input type="radio" ' + (w.format === f.id ? 'checked' : '') + '><div><b>' + esc(f.label) + '</b><span>' + esc(f.blurb) + '</span></div></div>';
+    });
+    h += '</div>';
+    const clubs = S.group ? S.group.clubs : [w.club];
+    h += '<label>Club (stats go to this club)</label><select id="wClub">' +
+      clubs.map(c => '<option ' + (c === w.club ? 'selected' : '') + '>' + esc(c) + '</option>').join('') + '</select>';
+    if (w.format === 'club_vs_club') {
+      h += '<label>Home club</label><select id="wHome">' + clubs.map(c => '<option ' + (c === w.homeClub ? 'selected' : '') + '>' + esc(c) + '</option>').join('') + '</select>';
+      h += '<label>Visiting club</label><select id="wAway">' + clubs.map(c => '<option ' + (c === w.visitorClub ? 'selected' : '') + '>' + esc(c) + '</option>').join('') + '</select>';
+    }
+    h += '<div style="display:flex;gap:8px"><input type="text" id="wNewClub" placeholder="Add club…"><button class="btn inline" onclick="App.wizAddClub()">Add club</button></div>';
+    h += '<button class="btn primary" onclick="App.wizNext(2)">Next: Players ›</button>';
+  }
+
+  if (w.step === 2) {
+    const roster = S.group ? S.group.players : [];
+    h += '<p class="muted small">Optional — anyone can also join by name from the game link or the Join list until the game starts.</p>';
+    if (isPairFormat(w.format)) {
+      h += '<p class="small">Pairs are formed <b>in the order you tap players</b> (1st with 2nd, 3rd with 4th…).' +
+        (w.format === 'club_vs_club' ? ' Pairing happens inside each club — set each player\'s club when adding them.' : '') + '</p>';
+    }
+    if (w.format === 'team_battle') h += '<p class="small">Teams of 4 are formed <b>in the order you tap players</b> (first 4 = Team 1, next 4 = Team 2…).</p>';
+    h += '<p><b>' + w.selected.length + ' selected</b> ' +
+      '<button class="btn inline" onclick="App.wizSelectAll()">Select all</button>' +
+      '<button class="btn inline" onclick="App.wizClearSel()">Clear</button></p>';
+    roster.forEach(p => {
+      const sel = w.selected.includes(p.name);
+      h += '<button class="player-btn ' + (sel ? 'sel' : '') + '" onclick="App.wizToggle(\'' + esc(p.name) + '\')">' +
+        (sel ? '✓ ' : '') + esc(p.name) +
+        (p.dupr !== null && p.dupr !== undefined ? ' <span class="muted small">DUPR ' + esc(p.dupr) + '</span>' : '') +
+        (p.club ? ' <span class="muted small">· ' + esc(p.club) + '</span>' : '') + '</button>';
+    });
+    if (isPairFormat(w.format) && w.selected.length) h += wizPairPreview();
+    if (w.format === 'team_battle' && w.selected.length) h += wizTeamPreview();
+    h += '<div class="card"><label>Player name (full name)</label><input type="text" id="wPName" placeholder="Full name">' +
+      '<label>DUPR (optional)</label><input type="number" step="0.01" min="1" max="8" id="wPDupr" placeholder="e.g. 3.75">';
+    if (w.format === 'club_vs_club') {
+      h += '<label>Club</label><select id="wPClub">' + [w.homeClub, w.visitorClub].filter(Boolean).map(c => '<option>' + esc(c) + '</option>').join('') + '</select>';
+    }
+    h += '<button class="btn" id="wAddPlayerBtn" onclick="App.wizAddPlayer()">Add player</button></div>';
+    h += '<div style="display:flex;gap:8px"><button class="btn" style="flex:1" onclick="App.wizNext(1)">‹ Back</button>' +
+      '<button class="btn primary" style="flex:2" onclick="App.wizNext(3)">Next ›</button></div>';
+  }
+
+  if (w.step === 3) {
+    const need = Math.max(4, w.selected.length);
+    const opts = [4, 8, 12, 16].filter(n => n >= need);
+    if (!opts.includes(w.maxPlayers)) w.maxPlayers = opts[0] || 16;
+    h += '<label>Max players</label><div class="chips">' + opts.map(n =>
+      '<button class="chip ' + (w.maxPlayers === n ? 'sel' : '') + '" onclick="App.wizMax(' + n + ')">' + n + '</button>').join('') + '</div>';
+    h += '<p class="small muted">Join closes once ' + w.maxPlayers + ' players have signed up; if someone drops out, the spot opens again.</p>';
+    h += '<label>Courts</label><div class="chips">' + ['A','B','C','D','E','F','G','H'].map(c =>
+      '<button class="chip ' + (w.courts.includes(c) ? 'sel' : '') + '" onclick="App.wizCourt(\'' + c + '\')">' + c + '</button>').join('') + '</div>';
+    h += '<p class="small muted">' + w.courts.length + ' courts: ' + esc(w.courts.join(', ')) + '. Games start with exactly 4, 8, 12 or 16 players. Courts fill 4 at a time; if there are more players than courts, the extras sit out in fair rotation. Partners don\'t repeat until they have to.</p>';
+    h += '<label>Number of rounds</label><div class="stepper"><button onclick="App.wizRounds(-1)">−</button><span class="val">' + w.numRounds + '</span><button onclick="App.wizRounds(1)">+</button></div>';
+    h += '<div class="toggle ' + (w.balanceDupr ? 'on' : '') + '" onclick="App.wizToggleOpt(\'balanceDupr\')"><span>Balance matchups by DUPR</span><span class="sw"></span></div>';
+    h += '<div class="toggle ' + (w.trophy ? 'on' : '') + '" onclick="App.wizToggleOpt(\'trophy\')"><span>🏆 Trophy match — 1st place wins a trophy</span><span class="sw"></span></div>';
+    h += '<div style="display:flex;gap:8px"><button class="btn" style="flex:1" onclick="App.wizNext(2)">‹ Back</button>' +
+      '<button class="btn primary" style="flex:2" onclick="App.wizCreate()">Create game</button></div>';
+  }
+  $main.innerHTML = h;
+}
+function wizPairPreview(){
+  const w = S.wiz;
+  let h = '<div class="card"><b>Pairs</b>';
+  if (w.format === 'club_vs_club') {
+    [w.homeClub, w.visitorClub].forEach(club => {
+      const inClub = w.selected.filter(n => (wizPlayer(n).club || w.club) === club);
+      h += '<p class="small" style="margin:8px 0 2px"><b>' + esc(club) + '</b></p>';
+      for (let i = 0; i < inClub.length; i += 2) {
+        h += '<p class="small" style="margin:2px 0">• ' + esc(inClub[i]) + (inClub[i + 1] ? ' &amp; ' + esc(inClub[i + 1]) : ' <span class="muted">(needs a partner)</span>') + '</p>';
+      }
+      if (inClub.length % 2) h += '<p class="small muted">Odd number — add one more ' + esc(club) + ' player.</p>';
+    });
+  } else {
+    for (let i = 0; i < w.selected.length; i += 2) {
+      h += '<p class="small" style="margin:2px 0">• ' + esc(w.selected[i]) + (w.selected[i + 1] ? ' &amp; ' + esc(w.selected[i + 1]) : ' <span class="muted">(needs a partner)</span>') + '</p>';
+    }
+  }
+  return h + '</div>';
+}
+function wizTeamPreview(){
+  const w = S.wiz;
+  let h = '<div class="card"><b>Teams</b>';
+  for (let i = 0; i < w.selected.length; i += 4) {
+    h += '<p class="small" style="margin:4px 0"><b>Team ' + (i / 4 + 1) + ':</b> ' + w.selected.slice(i, i + 4).map(esc).join(', ') + '</p>';
+  }
+  return h + '</div>';
+}
+function wizReadStep1(){
+  const w = S.wiz;
+  const v = id => { const el = document.getElementById(id); return el ? el.value : null; };
+  if (v('wName') !== null) w.name = v('wName') || w.name;
+  if (v('wDay')) w.day = v('wDay');
+  if (v('wTime')) w.time = v('wTime');
+  if (v('wPlace') !== null) w.place = v('wPlace');
+  if (v('wClub')) w.club = v('wClub');
+  if (v('wHome')) w.homeClub = v('wHome');
+  if (v('wAway')) w.visitorClub = v('wAway');
+}
+function buildEventPayload(){
+  const w = S.wiz;
+  const players = w.selected.map(n => {
+    const p = wizPlayer(n);
+    return { name: p.name, dupr: (p.dupr === undefined ? null : p.dupr), club: p.club || null };
+  });
+  const payload = {
+    name: w.name, day: w.day, time: w.time, place: w.place, format: w.format, club: w.club,
+    maxPlayers: w.maxPlayers, courts: w.courts, numRounds: w.numRounds,
+    balanceDupr: w.balanceDupr, trophy: w.trophy, players
+  };
+  if (w.format === 'mixed_doubles' || w.format === 'set_partners') {
+    payload.pairs = [];
+    for (let i = 0; i < w.selected.length; i += 2) payload.pairs.push({ players: [w.selected[i], w.selected[i + 1]], club: w.club });
+  }
+  if (w.format === 'club_vs_club') {
+    payload.homeClub = w.homeClub; payload.visitorClub = w.visitorClub;
+    payload.pairs = [];
+    [w.homeClub, w.visitorClub].forEach(club => {
+      const inClub = players.filter(p => (p.club || w.club) === club).map(p => p.name);
+      for (let i = 0; i < inClub.length; i += 2) payload.pairs.push({ players: [inClub[i], inClub[i + 1]], club });
+    });
+  }
+  if (w.format === 'team_battle') {
+    payload.teams = [];
+    for (let i = 0; i < w.selected.length; i += 4) {
+      payload.teams.push({ name: 'Team ' + (i / 4 + 1), members: w.selected.slice(i, i + 4) });
+    }
+  }
+  return payload;
+}
+</script>
+<script>
+'use strict';
+/* ================= event view ================= */
+function fmtDay(day){ return day ? new Date(day + 'T12:00:00').toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' }) : ''; }
+function formatLabel(id){ const f = PB.FORMATS.find(x => x.id === id); return f ? f.label : id; }
+
+function renderEvent(){
+  const ev = curEvent();
+  if (!S.group) { $main.innerHTML = '<p class="muted center" style="margin-top:30px">Loading…</p>'; refresh(); return; }
+  if (!ev) { $main.innerHTML = '<a class="backlink" href="#/">‹ Home</a><div class="card"><p>That game isn\'t in this group.</p></div>'; return; }
+  rememberGame(S.code, ev.id);
+  if (S.roundIdx > ev.rounds.length - 1) S.roundIdx = Math.max(0, ev.rounds.length - 1);
+  const host = isHost(ev);
+  let h = '<a class="backlink" href="#/">‹ All games</a>';
+  h += '<h1>' + esc(ev.name) + '</h1>';
+  h += '<p class="muted small" style="margin-top:-4px">' + esc(formatLabel(ev.format)) + ' · ' + esc(ev.club || '') +
+    '<br>' + esc(fmtDay(ev.day)) + (ev.time ? ' · ' + esc(ev.time) : '') + (ev.place ? ' · ' + esc(ev.place) : '') +
+    ' · Group code ' + esc(S.code) + '</p>';
+  if (lastError) { h += errBox(lastError); lastError = ''; }
+  if (ev.status === 'finished') h += '<div class="banner gold">Event finished — see Standings</div>';
+  else if (ev.status === 'live') h += '<div class="banner green">Game on — round ' + ev.rounds.length + ' of ' + ev.numRounds + '</div>';
+  else h += '<div class="banner grey">Not started yet — ' + ev.players.length + ' of ' + ev.maxPlayers + ' players in. ' + (host ? 'Start it from the Manage tab.' : 'Waiting on the host to start.') + '</div>';
+
+  if (S.tab === 'courts') h += tabCourts(ev, host);
+  else if (S.tab === 'me') h += tabMe(ev);
+  else if (S.tab === 'rounds') h += tabRounds(ev);
+  else if (S.tab === 'standings') h += tabStandings(ev);
+  else if (S.tab === 'manage') h += tabManage(ev, host);
+
+  const tabs = [['courts', '🏟', 'Courts'], ['me', '🙋', 'Me'], ['rounds', '🔁', 'Rounds'], ['standings', '🏆', 'Standings'], ['manage', '⚙️', 'Manage']];
+  h += '<nav class="tabs">' + tabs.map(t =>
+    '<button class="' + (S.tab === t[0] ? 'sel' : '') + '" onclick="App.tab(\'' + t[0] + '\')"><span class="ic">' + t[1] + '</span>' + t[2] + '</button>').join('') + '</nav>';
+  $main.innerHTML = h;
+}
+
+function matchCard(ev, m, ri, mi, host){
+  const scored = PB.isScored(m);
+  let h = '<div class="card match"><span class="court">Court ' + esc(m.court) + '</span>';
+  if (ev.status === 'finished' && scored) h += ' <span class="tag final">FINAL</span>';
+  if (m.meta && m.meta.teams) h += ' <span class="tag">' + esc(m.meta.teams[0]) + ' vs ' + esc(m.meta.teams[1]) + ' · Game ' + m.meta.game + '</span>';
+  h += '<div class="teams">' + esc(m.a.join(' & ')) + ' <span class="vs">vs</span> ' + esc(m.b.join(' & ')) + '</div>';
+  if (scored) h += '<div class="score">' + m.scoreA + ' — ' + m.scoreB + '</div>';
+  if (host && ev.status === 'live') {
+    h += '<div class="score-inputs"><input type="number" min="0" max="99" id="scA-' + ri + '-' + mi + '" value="' + (scored ? m.scoreA : '') + '" placeholder="0">' +
+      '<span class="muted">—</span><input type="number" min="0" max="99" id="scB-' + ri + '-' + mi + '" value="' + (scored ? m.scoreB : '') + '" placeholder="0">' +
+      '<button class="btn inline primary" onclick="App.saveScore(' + ri + ',' + mi + ')">Save</button></div>';
+  } else if (!scored) h += '<p class="muted small" style="margin:4px 0 0">No score yet</p>';
+  return h + '</div>';
+}
+
+function tabCourts(ev, host){
+  if (!ev.rounds.length) return '<div class="card"><p class="muted">No rounds yet. ' + (host ? 'Start the game from the Manage tab.' : 'The host hasn\'t started yet.') + '</p></div>';
+  const ri = Math.min(S.roundIdx, ev.rounds.length - 1);
+  const round = ev.rounds[ri];
+  let h = '<div class="pills">';
+  ev.rounds.forEach((r, i) => {
+    const done = r.matches.every(PB.isScored);
+    h += '<button class="pill ' + (i === ri ? 'sel' : '') + ' ' + (done ? 'done' : '') + '" onclick="App.round(' + i + ')">' + (done ? '✓' : (i + 1)) + '</button>';
+  });
+  h += '</div>';
+  h += '<div class="roundnav"><button onclick="App.round(' + (ri - 1) + ')" ' + (ri === 0 ? 'disabled' : '') + '>‹ Prev</button>' +
+    '<b>Round ' + (ri + 1) + ' of ' + ev.numRounds + (ri === ev.rounds.length - 1 && ev.status === 'live' ? ' · current' : '') + '</b>' +
+    '<button onclick="App.round(' + (ri + 1) + ')" ' + (ri >= ev.rounds.length - 1 ? 'disabled' : '') + '>Next ›</button></div>';
+  if (round.byes && round.byes.length) h += '<p class="small muted">Sitting out: ' + round.byes.map(esc).join(', ') + '</p>';
+  round.matches.forEach((m, mi) => { h += matchCard(ev, m, ri, mi, host); });
+  if (host && ev.status === 'live' && ri === ev.rounds.length - 1) {
+    const done = round.matches.every(PB.isScored);
+    if (done && ev.rounds.length < ev.numRounds) h += '<button class="btn primary" onclick="App.nextRound()">End round — generate round ' + (ev.rounds.length + 1) + '</button>';
+    if (done && ev.rounds.length >= ev.numRounds) h += '<button class="btn gold" onclick="App.finish()">Finish event — final standings</button>';
+    if (!done) h += '<p class="small muted center">Enter every score to unlock the next round.</p>';
+  }
+  return h;
+}
+
+function tabMe(ev){
+  const me = myName(ev.id);
+  let h = '';
+  if (ev.status === 'open') {
+    h += '<div class="banner grey">The game hasn\'t started — tap your name to check in, or join below if you\'re not on the list.</div>';
+  } else {
+    h += '<div class="banner grey">The game started — new players can\'t be added. Already playing? Tap your name.</div>';
+  }
+  if (me) {
+    const p = ev.players.find(p => p.name.toLowerCase() === me.toLowerCase());
+    h += '<div class="card"><b>You\'re checked in as ' + esc(me) + '</b>' +
+      (p && p.dupr ? ' <span class="muted small">DUPR ' + esc(p.dupr) + '</span>' : '') +
+      '<br><button class="btn inline" onclick="App.switchMe()">Not me — switch</button></div>';
+    const ri = ev.rounds.length - 1;
+    if (ri >= 0) {
+      const mine = ev.rounds[ri].matches.map((m, mi) => ({ m, mi })).filter(x => x.m.a.includes(me) || x.m.b.includes(me));
+      if (mine.length) {
+        h += '<h3>Your match — round ' + (ri + 1) + '</h3>';
+        mine.forEach(x => { h += matchCard(ev, x.m, ri, x.mi, false); });
+      } else if (ev.rounds[ri].byes && ev.rounds[ri].byes.includes(me)) {
+        h += '<div class="card"><p>You\'re sitting out round ' + (ri + 1) + ' (fair rotation).</p></div>';
+      }
+    }
+    const st = standingsFor(ev).find(s => s.name === me);
+    if (st && st.GP) h += '<div class="card"><b>Your night so far:</b> ' + st.W + 'W – ' + st.L + 'L · ' + (st.diff > 0 ? '+' : '') + st.diff + ' points</div>';
+  }
+  h += '<h3>Players (' + ev.players.length + ' playing)</h3>';
+  ev.players.forEach(p => {
+    h += '<button class="player-btn ' + (me === p.name ? 'sel' : '') + '" onclick="App.checkin(\'' + esc(p.name) + '\')">' +
+      esc(p.name) + (p.dupr ? ' <span class="muted small">DUPR ' + esc(p.dupr) + '</span>' : '') +
+      '<span class="dot">' + (p.checkedIn ? '✅' : '⚪') + '</span></button>';
+  });
+  if (ev.status === 'open' && ev.players.length < ev.maxPlayers) {
+    h += '<div class="card"><label>Not on the list? Join by name</label>' +
+      '<input type="text" id="joinName" placeholder="Full name">' +
+      '<label>DUPR (optional)</label><input type="number" step="0.01" min="1" max="8" id="joinDupr" placeholder="e.g. 3.75">' +
+      '<button class="btn primary" onclick="App.join()">Join game</button></div>';
+  }
+  return h;
+}
+
+function tabRounds(ev){
+  if (!ev.rounds.length) return '<div class="card"><p class="muted">No rounds yet.</p></div>';
+  let h = '';
+  ev.rounds.map((r, ri) => ({ r, ri })).reverse().forEach(({ r, ri }) => {
+    const scored = r.matches.filter(PB.isScored).length;
+    h += '<details class="round" ' + (ri === ev.rounds.length - 1 ? 'open' : '') + '><summary>Round ' + (ri + 1) + ' — ' + scored + '/' + r.matches.length + ' scored</summary>';
+    r.matches.forEach((m, mi) => { h += matchCard(ev, m, ri, mi, isHost(ev)); });
+    if (r.byes && r.byes.length) h += '<p class="small muted">Sat out: ' + r.byes.map(esc).join(', ') + '</p>';
+    h += '</details>';
+  });
+  return h;
+}
+
+function statTable(rows){
+  return '<table><tr><th>#</th><th>Player</th><th>W</th><th>L</th><th>Win%</th><th>GP</th><th>PF</th><th>PA</th><th>+/-</th></tr>' +
+    rows.map((s, i) => '<tr><td>' + (i + 1) + '</td><td>' + esc(s.name) + '</td><td>' + s.W + '</td><td>' + s.L + '</td><td>' +
+      Math.round(s.winPct * 100) + '%</td><td>' + s.GP + '</td><td>' + s.PF + '</td><td>' + s.PA + '</td><td>' + (s.diff > 0 ? '+' : '') + s.diff + '</td></tr>').join('') + '</table>';
+}
+function tabStandings(ev){
+  const matches = allMatches(ev);
+  let h = '';
+  if (ev.status === 'finished') h += '<div class="banner gold">Final standings · match complete</div>';
+  const players = standingsFor(ev);
+  const top = players.find(s => s.GP > 0);
+  if (top) h += '<div class="banner green">Top player: ' + esc(top.name) + ' (' + top.W + 'W, ' + (top.diff > 0 ? '+' : '') + top.diff + ')</div>';
+  if (ev.format === 'club_vs_club') {
+    const clubOf = pair => { const pr = (ev.pairs || []).find(x => PB.samePair(x.players, pair)); return pr ? pr.club : null; };
+    const totals = PB.clubTotals(matches, clubOf);
+    if (totals.length) {
+      h += '<div class="card">' + totals.map(t => '<div class="kv"><span>' + esc(t.club) + '</span><b>' + t.matchesWon + ' matches won · ' + t.points + ' pts</b></div>').join('') + '</div>';
+    }
+    [ev.homeClub, ev.visitorClub].forEach(club => {
+      const cp = (ev.pairs || []).filter(p => p.club === club);
+      if (cp.length) h += '<h3>' + esc(club) + ' teams</h3><div class="card">' + statTable(PB.computePairStandings(matches, cp)) + '</div>';
+    });
+  }
+  if (ev.format === 'team_battle') {
+    h += '<h3>Teams</h3><div class="card">' + statTable(PB.computeTeamStandings(matches, ev.teams || [])) + '</div>';
+  }
+  if (['mixed_doubles', 'set_partners'].includes(ev.format)) {
+    h += '<h3>Teams</h3><div class="card">' + statTable(PB.computePairStandings(matches, ev.pairs || [])) + '</div>';
+  }
+  h += '<h3>Players</h3><div class="card">' + statTable(players) +
+    '<p class="small muted">Ranked by win %, then point differential, then games played.' + (ev.format === 'club_vs_club' ? '' : ' Playoff games not included.') + '</p></div>';
+  return h;
+}
+
+function tabManage(ev, host){
+  let h = '<h2>Share with players</h2>';
+  const link = eventLink(S.code, ev.id);
+  h += '<div class="sharebox">' + esc(link) + '</div>';
+  h += '<button class="btn primary" onclick="App.share(\'' + esc(link) + '\')">Share game</button>';
+  h += '<h2>Players (' + ev.players.length + ' playing)</h2><div class="card">';
+  ev.players.forEach(p => {
+    h += '<div class="kv"><span>' + esc(p.name) + (p.dupr ? ' · DUPR ' + esc(p.dupr) : '') + (p.club ? ' · ' + esc(p.club) : '') + '</span><span>' + (p.checkedIn ? '✅ in' : 'not checked in') + '</span></div>';
+  });
+  h += '</div>';
+  if (ev.status !== 'open') h += '<p class="small muted">Roster locked: no adding or removing players after the start (the host can sub someone in below).</p>';
+  if (host && ev.status !== 'finished') {
+    h += '<div class="card"><b>Sub a player</b><label>Player out</label><select id="subOut">' +
+      ev.players.map(p => '<option>' + esc(p.name) + '</option>').join('') + '</select>' +
+      '<label>Player in (full name)</label><input type="text" id="subIn" placeholder="Full name">' +
+      '<button class="btn" onclick="App.sub()">Sub player</button></div>';
+  }
+  h += '<h2>Settings</h2><div class="card">' +
+    '<div class="kv"><span>Status</span><b>' + (ev.status === 'open' ? 'Not started' : ev.status === 'live' ? 'Locked: game started' : 'Finished') + '</b></div>' +
+    '<div class="kv"><span>Day &amp; time</span><b>' + esc(fmtDay(ev.day)) + (ev.time ? ' · ' + esc(ev.time) : '') + '</b></div>' +
+    '<div class="kv"><span>Courts · Format</span><b>' + ev.courts.length + ' courts (' + esc(ev.courts.join(', ')) + ') · ' + esc(formatLabel(ev.format)) + '</b></div>' +
+    '<div class="kv"><span>Rounds</span><b>' + ev.numRounds + ' · only the host (who started the game) can end it or add rounds</b></div></div>';
+  if (host && ev.status === 'open') h += '<button class="btn primary" onclick="App.start()">Start game</button>';
+  if (host && ev.status === 'live') h += '<button class="btn gold" onclick="App.finish()">Finish event</button>';
+  h += '<a class="btn" href="/api/groups/' + esc(S.code) + '/events/' + ev.id + '/export.csv">Export scores (CSV)</a>';
+  h += '<button class="btn" onclick="App.duplicate()">Duplicate as new event</button>';
+  h += '<button class="btn danger" onclick="App.removeMine()">Remove from my list</button>';
+  return h;
+}
+</script>
+<script>
+'use strict';
+/* ================= actions ================= */
+async function act(fn){ try { await fn(); } catch(e){ fail(e); } }
+const App = {
+  go, refresh,
+  openCode(){ const v = document.getElementById('codeIn').value.trim().toUpperCase(); if (v) { location.search = '?g=' + v; } },
+  openEvent(id){ S.tab = 'courts'; S.roundIdx = 0; go('#/e/' + id); },
+  tab(t){ S.tab = t; render(); window.scrollTo(0, 0); },
+  round(i){ const ev = curEvent(); if (!ev) return; S.roundIdx = Math.max(0, Math.min(i, ev.rounds.length - 1)); render(); },
+  statsTab(t){ S.statsTab = t; render(); },
+  statsClub(c){ S.statsClub = c; render(); },
+
+  async startCreate(){
+    S.wiz = newWizard();
+    if (!S.code) {
+      await act(async () => {
+        const data = await api('POST', '/groups', { clubs: ["Franco's"] });
+        S.code = data.group.code; LS.set('lastGroup', S.code);
+        const url = new URL(location.href); url.searchParams.set('g', S.code);
+        history.replaceState(null, '', url);
+        S.group = data.group;
+      });
+    }
+    if (S.code) go('#/create');
+  },
+
+  /* wizard */
+  wizFormat(f){ wizReadStep1(); S.wiz.format = f; render(); },
+  async wizAddClub(){
+    const inp = document.getElementById('wNewClub');
+    const name = inp.value.trim(); if (!name) return;
+    wizReadStep1();
+    await act(async () => {
+      const data = await api('POST', '/groups/' + S.code + '/clubs', { name });
+      S.group = data.group; S.wiz.club = name; render();
+    });
+  },
+  wizToggle(name){
+    const w = S.wiz;
+    const i = w.selected.indexOf(name);
+    if (i >= 0) w.selected.splice(i, 1); else w.selected.push(name);
+    render();
+  },
+  wizSelectAll(){ S.wiz.selected = (S.group ? S.group.players : []).map(p => p.name); render(); },
+  wizClearSel(){ S.wiz.selected = []; render(); },
+  wizAddPlayer(){
+    const w = S.wiz;
+    const name = document.getElementById('wPName').value.trim();
+    if (!name) return;
+    const duprV = document.getElementById('wPDupr').value;
+    const clubEl = document.getElementById('wPClub');
+    const entry = { name, dupr: duprV ? Number(duprV) : null, club: clubEl ? clubEl.value : null };
+    w.tempPlayers = w.tempPlayers || {}; w.tempPlayers[name] = entry;
+    if (!w.selected.includes(name)) w.selected.push(name);
+    render();
+  },
+  wizMax(n){ S.wiz.maxPlayers = n; render(); },
+  wizCourt(c){
+    const w = S.wiz;
+    const i = w.courts.indexOf(c);
+    if (i >= 0) { if (w.courts.length > 1) w.courts.splice(i, 1); }
+    else w.courts.push(c);
+    w.courts.sort(); render();
+  },
+  wizRounds(d){ const w = S.wiz; w.numRounds = Math.max(1, Math.min(30, w.numRounds + d)); render(); },
+  wizToggleOpt(k){ S.wiz[k] = !S.wiz[k]; render(); },
+  wizNext(step){
+    const w = S.wiz;
+    if (w.step === 1) wizReadStep1();
+    if (step === 3) {
+      if (w.selected.length < 4) { fail(new Error('Pick at least 4 players first — or leave the roster empty and let players join from the link.')); return; }
+      if (isPairFormat(w.format) && w.selected.length % 2) { fail(new Error('Pair formats need an even number of players.')); return; }
+      if (w.format === 'team_battle' && w.selected.length % 4) { fail(new Error('Team Battle needs a multiple of 4 players.')); return; }
+      if (w.format === 'club_vs_club' && w.homeClub === w.visitorClub) { fail(new Error('Pick two different clubs for Club vs Club.')); return; }
+    }
+    w.step = step; render(); window.scrollTo(0, 0);
+  },
+  async wizCreate(){
+    const payload = buildEventPayload();
+    await act(async () => {
+      const data = await api('POST', '/groups/' + S.code + '/events', payload);
+      setHostToken(data.event.id, data.hostToken);
+      rememberGame(S.code, data.event.id);
+      S.wiz = null; S.tab = 'manage'; S.roundIdx = 0;
+      await refresh();
+      go('#/e/' + data.event.id);
+      toast('Game created — share the link from Manage');
+    });
+  },
+
+  /* event actions */
+  async checkin(name){
+    const ev = curEvent(); if (!ev) return;
+    setMyName(ev.id, name);
+    await act(async () => {
+      const data = await api('POST', '/groups/' + S.code + '/events/' + ev.id + '/checkin', { name });
+      await refresh();
+    });
+    render();
+  },
+  switchMe(){ const ev = curEvent(); if (ev) { setMyName(ev.id, null); render(); } },
+  async join(){
+    const ev = curEvent(); if (!ev) return;
+    const name = document.getElementById('joinName').value.trim();
+    const duprV = document.getElementById('joinDupr').value;
+    if (!name) return;
+    await act(async () => {
+      await api('POST', '/groups/' + S.code + '/events/' + ev.id + '/join', { name, dupr: duprV ? Number(duprV) : null });
+      setMyName(ev.id, name);
+      await refresh(); toast('You\'re in!');
+    });
+  },
+  async start(){
+    const ev = curEvent(); if (!ev) return;
+    await act(async () => {
+      await api('POST', '/groups/' + S.code + '/events/' + ev.id + '/start', { hostToken: hostToken(ev.id) });
+      S.tab = 'courts'; S.roundIdx = 0; await refresh(); toast('Game on!');
+    });
+  },
+  async saveScore(ri, mi){
+    const ev = curEvent(); if (!ev) return;
+    const a = document.getElementById('scA-' + ri + '-' + mi).value;
+    const b = document.getElementById('scB-' + ri + '-' + mi).value;
+    if (a === '' || b === '') { toast('Enter both scores'); return; }
+    await act(async () => {
+      await api('POST', '/groups/' + S.code + '/events/' + ev.id + '/score',
+        { hostToken: hostToken(ev.id), round: ri, match: mi, scoreA: Number(a), scoreB: Number(b) });
+      await refresh(); toast('Score saved');
+    });
+  },
+  async nextRound(){
+    const ev = curEvent(); if (!ev) return;
+    await act(async () => {
+      await api('POST', '/groups/' + S.code + '/events/' + ev.id + '/next', { hostToken: hostToken(ev.id) });
+      S.roundIdx = ev.rounds.length; await refresh();
+    });
+  },
+  async finish(){
+    const ev = curEvent(); if (!ev) return;
+    if (!confirm('Finish this event? Standings become final.')) return;
+    await act(async () => {
+      await api('POST', '/groups/' + S.code + '/events/' + ev.id + '/finish', { hostToken: hostToken(ev.id) });
+      S.tab = 'standings'; await refresh();
+    });
+  },
+  async sub(){
+    const ev = curEvent(); if (!ev) return;
+    const outName = document.getElementById('subOut').value;
+    const newName = document.getElementById('subIn').value.trim();
+    if (!newName) { toast('Enter the incoming player\'s name'); return; }
+    await act(async () => {
+      await api('POST', '/groups/' + S.code + '/events/' + ev.id + '/sub',
+        { hostToken: hostToken(ev.id), outName, newName });
+      await refresh(); toast('Subbed ' + newName + ' in for ' + outName);
+    });
+  },
+  async duplicate(){
+    const ev = curEvent(); if (!ev) return;
+    await act(async () => {
+      const data = await api('POST', '/groups/' + S.code + '/events/' + ev.id + '/duplicate', {});
+      setHostToken(data.event.id, data.hostToken);
+      rememberGame(S.code, data.event.id);
+      S.tab = 'manage'; await refresh();
+      go('#/e/' + data.event.id);
+      toast('Duplicated — you host the new game');
+    });
+  },
+  removeMine(){ const ev = curEvent(); if (ev) { forgetGame(S.code, ev.id); go('#/'); } },
+  async share(link){
+    if (navigator.share) { try { await navigator.share({ title: "Franco's Pickleball", url: link }); return; } catch(e){} }
+    try { await navigator.clipboard.writeText(link); toast('Link copied'); }
+    catch(e){ prompt('Copy this link:', link); }
+  }
+};
+window.App = App;
+
+/* ================= boot / polling / pull-to-refresh ================= */
+window.addEventListener('hashchange', () => { parseRoute(); render(); });
+parseRoute(); render();
+if (S.code) refresh();
+setInterval(() => {
+  if (document.hidden || !S.code) return;
+  if (S.route === 'event' || S.route === 'join' || S.route === 'home') refresh();
+}, 5000);
+let touchY = null;
+document.addEventListener('touchstart', e => { touchY = window.scrollY <= 0 ? e.touches[0].clientY : null; }, { passive: true });
+document.addEventListener('touchend', e => {
+  if (touchY === null) return;
+  const dy = e.changedTouches[0].clientY - touchY;
+  touchY = null;
+  if (dy > 90) refresh(true);
+}, { passive: true });
+</script>
+</body>
+</html>
